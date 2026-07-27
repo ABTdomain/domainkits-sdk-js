@@ -1,0 +1,16 @@
+node_modules/
+dist/
+*.tgz
+
+.env
+.env.*
+*.key
+*.pem
+secrets.json
+.n8n/
+
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log

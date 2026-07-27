@@ -1,0 +1,51 @@
+{
+	"name": "@domainkits/sdk",
+	"version": "0.1.0",
+	"description": "TypeScript client for the DomainKits REST API. Search expiring, newly registered, aged, active, deleted and marketplace domains, plus WHOIS, DNS, Certificate Transparency and trends.",
+	"license": "MIT",
+	"homepage": "https://domainkits.com/dev",
+	"keywords": [
+		"domain",
+		"domain-search",
+		"expired-domains",
+		"newly-registered-domains",
+		"whois",
+		"dns",
+		"certificate-transparency",
+		"domainkits"
+	],
+	"author": {
+		"name": "DomainKits",
+		"email": "info@domainkits.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ABTdomain/domainkits-sdk-js.git"
+	},
+	"bugs": {
+		"url": "https://github.com/ABTdomain/domainkits-sdk-js/issues"
+	},
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=18"
+	},
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "npm run build"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.0",
+		"typescript": "^5.9.3"
+	}
+}
