@@ -8,7 +8,7 @@ DomainKits is one API with a shared key across every endpoint. This SDK covers a
 
 The REST API is for Premium and Platinum accounts; unauthenticated requests are rejected with 401. Keys start with `dk_` and come from [domainkits.com](https://domainkits.com/pricing).
 
-If you want a no-key way to explore the same data from an AI client, use [@domainkits/mcp](https://www.npmjs.com/package/@domainkits/mcp) instead, which has a guest tier.
+If you want a no-key way to explore the same data from an AI client, use [@domainkits/mcp](https://domainkits.com/mcp) instead, which has a guest tier.
 
 ## Install
 
@@ -147,7 +147,7 @@ Daily quotas reset at 00:00 UTC, monthly quotas on the 1st. Current limits: [dom
 ## Resources
 
 - [DomainKits API reference](https://domainkits.com/dev/api-docs)
-- [@domainkits/mcp](https://www.npmjs.com/package/@domainkits/mcp) — same API for MCP clients
+- [@domainkits/mcp](https://domainkits.com/mcp) — same API for MCP clients
 - [n8n-nodes-domainkits](https://www.npmjs.com/package/n8n-nodes-domainkits) — same API for n8n
 
 ## License
