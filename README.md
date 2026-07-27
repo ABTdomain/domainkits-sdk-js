@@ -23,17 +23,17 @@ import { DomainKits } from '@domainkits/sdk';
 
 const dk = new DomainKits(process.env.DOMAINKITS_API_KEY!);
 
-const { data, total } = await dk.expired.list({
-  keyword: 'clinic',
+const { data, total } = await dk.nrds.list({
+  keyword: 'shop',
   tld: 'com',
-  length: '5-10',
+  reg_date: '2026-07-10',
   no_number: true,
   no_hyphen: true,
 });
 
 console.log(`${total} matches`);
 for (const d of data) {
-  console.log(d.domain, d.age, d.status);
+  console.log(d.domain, d.registered_date, d.expiry_date);
 }
 ```
 
@@ -42,7 +42,7 @@ for (const d of data) {
 A single request returns at most 500 results. `paginate` walks the whole result set for you:
 
 ```ts
-for await (const domain of dk.expired.paginate({ keyword: 'clinic', tld: 'com' })) {
+for await (const domain of dk.nrds.paginate({ keyword: 'shop', tld: 'com' })) {
   console.log(domain.domain);
 }
 ```
