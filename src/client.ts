@@ -170,7 +170,7 @@ export class DomainKitsClient {
 
 	async requestList<T>(
 		path: string,
-		params: Record<string, unknown> = {},
+		params: QueryParams = {},
 	): Promise<{ data: T[]; total: number }> {
 		const response = await this.requestRaw(path, params);
 		const envelope = (await response.json()) as Envelope<T[]>;
@@ -183,8 +183,23 @@ export class DomainKitsClient {
 			);
 		}
 
-		const data = envelope.data ?? [];
+		const data = Array.isArray(envelope.data) ? envelope.data : [];
 		return { data, total: envelope.total ?? data.length };
+	}
+
+	async requestEnvelope<T>(path: string, params: QueryParams = {}): Promise<T> {
+		const response = await this.requestRaw(path, params);
+		const envelope = (await response.json()) as Envelope<unknown>;
+
+		if (envelope.success === false) {
+			throw new DomainKitsError(
+				envelope.error ?? 'DomainKits API returned an error',
+				response.status,
+				readRateLimit(response.headers),
+			);
+		}
+
+		return envelope as T;
 	}
 }
 

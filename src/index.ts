@@ -5,7 +5,9 @@ import type {
 	AgedDomain,
 	AgedSearchParams,
 	CommonSearchParams,
+	CtCertificate,
 	CtCertsParams,
+	CtHostname,
 	CtSearchParams,
 	DeletedDomain,
 	DeletedSearchParams,
@@ -27,6 +29,7 @@ import type {
 	TrendsKeywordType,
 	TrendsTldType,
 	TyposquatParams,
+	TyposquatResult,
 	Usage,
 	WhoisRecord,
 } from './types.js';
@@ -132,15 +135,15 @@ export class DomainKits {
 	}
 
 	tldCheck(params: TldCheckParams): Promise<TldCheckResult> {
-		return this.client.request<TldCheckResult>('/tld-check', toQuery(params));
+		return this.client.requestEnvelope<TldCheckResult>('/tld-check', toQuery(params));
 	}
 
-	nsReverse(params: NsReverseParams): Promise<SearchResult<{ domain: string }>> {
-		return this.client.requestList<{ domain: string }>('/ns-reverse', toQuery(params));
+	nsReverse(params: NsReverseParams): Promise<SearchResult<string>> {
+		return this.client.requestList<string>('/ns-reverse', toQuery(params));
 	}
 
-	typosquat(params: TyposquatParams): Promise<Record<string, unknown>> {
-		return this.client.request<Record<string, unknown>>('/typosquat', toQuery(params));
+	typosquat(params: TyposquatParams): Promise<TyposquatResult> {
+		return this.client.requestEnvelope<TyposquatResult>('/typosquat', toQuery(params));
 	}
 
 	monitorChanges(params: MonitorChangesParams = {}): Promise<SearchResult<Record<string, unknown>>> {
@@ -150,16 +153,16 @@ export class DomainKits {
 		);
 	}
 
-	ctSubdomains(domain: string): Promise<Record<string, unknown>> {
-		return this.client.request<Record<string, unknown>>('/ct/subdomains', { domain });
+	ctSubdomains(domain: string): Promise<SearchResult<CtHostname>> {
+		return this.client.requestList<CtHostname>('/ct/subdomains', { domain });
 	}
 
-	ctCerts(params: CtCertsParams): Promise<Record<string, unknown>> {
-		return this.client.request<Record<string, unknown>>('/ct/certs', toQuery(params));
+	ctCerts(params: CtCertsParams): Promise<SearchResult<CtCertificate>> {
+		return this.client.requestList<CtCertificate>('/ct/certs', toQuery(params));
 	}
 
-	ctSearch(params: CtSearchParams): Promise<Record<string, unknown>> {
-		return this.client.request<Record<string, unknown>>('/ct/search', toQuery(params));
+	ctSearch(params: CtSearchParams): Promise<SearchResult<CtHostname>> {
+		return this.client.requestList<CtHostname>('/ct/search', toQuery(params));
 	}
 
 	tldTrends(type: TrendsTldType, params: Record<string, unknown> = {}): Promise<Record<string, unknown>> {

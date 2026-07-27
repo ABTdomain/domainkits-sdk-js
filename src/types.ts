@@ -1,7 +1,7 @@
 export type ExpiryStage = 'expired' | 'redemption' | 'pending_delete';
 export type KeywordPosition = 'start' | 'end' | 'middle' | 'contain';
 export type Composition = 'all_alpha' | 'all_number';
-export type LengthRange = '<5' | '5-10' | '10-15' | '15+';
+export type LengthRange = '<5' | '5-10' | '10-15' | '15+' | (string & {});
 export type HoldStatus = 'no_hold' | 'has_hold';
 
 export interface CommonSearchParams {
@@ -27,7 +27,8 @@ export interface ExpiredSearchParams extends CommonSearchParams {
 
 export interface NrdsSearchParams extends CommonSearchParams {
 	days_range?: '0-10' | '10-20' | '20+';
-	period?: string;
+	reg_date?: string;
+	period?: '1' | '2-5' | '6+' | '2+' | '1-5';
 	has_sale?: boolean;
 	sort?: string;
 }
@@ -51,7 +52,7 @@ export interface DeletedSearchParams extends CommonSearchParams {
 }
 
 export interface MarketSearchParams extends CommonSearchParams {
-	status?: string;
+	platform?: string;
 	sort?: string;
 }
 
@@ -152,6 +153,9 @@ export interface NsReverseParams {
 	tld?: string;
 	keyword?: string;
 	sort?: string;
+	type?: Composition;
+	no_number?: boolean;
+	no_hyphen?: boolean;
 	pure_alpha?: boolean;
 	pure_digit?: boolean;
 	min_len?: number;
@@ -208,15 +212,39 @@ export interface RegistrarResult {
 export type TldAvailability = 'registered' | 'available' | string;
 
 export interface TldCheckResult {
+	data: Record<string, TldAvailability> | string[] | null;
+	total: number;
 	prefix: string;
-	count: number;
-	tlds: Record<string, TldAvailability>;
 }
 
 export interface TldCheckParams {
 	prefix: string;
 	mode?: string;
 	tlds?: string | string[];
+}
+
+export interface TyposquatVariant {
+	domain: string;
+	registered: boolean;
+	type?: string;
+	status?: 'registered' | 'for_sale' | 'expiring';
+	latest_whois?: {
+		created?: string;
+		updated?: string;
+		expires?: string;
+		registrar_name?: string;
+		status?: string[];
+		nameservers?: string[];
+	};
+}
+
+export interface TyposquatResult {
+	data: TyposquatVariant[];
+	total: number;
+	domain: string;
+	variants_generated: number;
+	variants_registered: number;
+	whois_note?: string;
 }
 
 export interface TyposquatParams {
@@ -230,10 +258,31 @@ export interface MonitorChangesParams {
 	keyword?: string;
 	tld?: string;
 	reason?: string;
-	length?: LengthRange;
+	length?: number;
+	no_number?: boolean;
+	type?: 'all_number';
 	has_digit?: boolean;
 	limit?: number;
 	offset?: number;
+}
+
+export interface CtHostname {
+	d: string;
+	ls: string;
+}
+
+export interface CtCertificate {
+	domain: string;
+	reg_domain?: string;
+	fingerprint: string;
+	issuer?: string;
+	cert_type?: string;
+	issue_time?: string;
+	log_time?: string;
+	not_after?: string;
+	san_list?: string[];
+	source?: string;
+	idx?: number;
 }
 
 export interface CtCertsParams {
@@ -244,7 +293,7 @@ export interface CtCertsParams {
 }
 
 export interface CtSearchParams {
-	q: string;
+	keyword: string;
 	field?: string;
 	sort?: string;
 	issuer?: string;

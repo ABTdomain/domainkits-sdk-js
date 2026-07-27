@@ -6,7 +6,9 @@ DomainKits is one API with a shared key across every endpoint. This SDK covers a
 
 ## Requirements
 
-The REST API is for Premium and Platinum accounts; unauthenticated requests are rejected with 401. If you want a no-key way to explore the same data from an AI client, use [@domainkits/mcp](https://www.npmjs.com/package/@domainkits/mcp) instead, which has a guest tier.
+The REST API is for Premium and Platinum accounts; unauthenticated requests are rejected with 401. Keys start with `dk_` and come from [domainkits.com](https://domainkits.com/pricing).
+
+If you want a no-key way to explore the same data from an AI client, use [@domainkits/mcp](https://www.npmjs.com/package/@domainkits/mcp) instead, which has a guest tier.
 
 ## Install
 
@@ -87,8 +89,8 @@ await dk.statusGuide('clientHold');
 await dk.monitorChanges({ tld: 'com', reason: 'transfer' });
 await dk.ctSubdomains('example.com');
 await dk.ctCerts({ domain: 'example.com' });
-await dk.ctSearch({ q: 'example' });
-await dk.tldTrends('newly');
+await dk.ctSearch({ keyword: 'example' });
+await dk.tldTrends('newly', { tld: 'com' });
 await dk.keywordTrends('hot');
 await dk.usage();
 await dk.searchStatus();
@@ -99,6 +101,8 @@ await dk.searchStatus();
 **gTLDs only** for the domain search endpoints. The index covers generic TLDs — `.com`, `.net`, `.org`, `.info`, `.biz`, `.xyz`, `.online`, `.site`, `.top`, `.club`, `.live`, `.app`, `.dev` and others. Country-code TLDs are not indexed: a query for `.de`, `.io`, `.co` or `.us` returns an empty result set, not an error.
 
 `whois`, `dns`, `safety`, `ipLookup` and the Certificate Transparency endpoints work on any domain, ccTLDs included.
+
+**No PII.** Responses contain no personal data. WHOIS results are limited to registrar, dates, status codes and nameservers; registrant names, emails, addresses and phone numbers are not returned.
 
 ## Errors
 
