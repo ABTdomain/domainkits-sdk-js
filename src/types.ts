@@ -3,6 +3,21 @@ export type KeywordPosition = 'start' | 'end' | 'middle' | 'contain';
 export type Composition = 'all_alpha' | 'all_number';
 export type LengthRange = '<5' | '5-10' | '10-15' | '15+' | (string & {});
 export type HoldStatus = 'no_hold' | 'has_hold';
+export type NewWithin = '1' | '2' | '3';
+export type Marketplace =
+	| 'Afternic'
+	| 'Atom'
+	| 'BuyDomains'
+	| 'Dan'
+	| 'DDD'
+	| 'DN.com'
+	| 'Godaddy'
+	| 'Hugedomains'
+	| 'SawSells'
+	| 'Sedo'
+	| 'Venture'
+	| '4.cn'
+	| (string & {});
 
 export interface CommonSearchParams {
 	keyword?: string;
@@ -22,6 +37,7 @@ export interface ExpiredSearchParams extends CommonSearchParams {
 	age_range?: string;
 	auction_date?: string;
 	hold?: HoldStatus;
+	new?: NewWithin;
 	sort?: 'age_desc' | 'age_asc' | 'length_asc' | 'length_desc';
 }
 
@@ -48,11 +64,13 @@ export interface DeletedSearchParams extends CommonSearchParams {
 	keyword: string;
 	age_range?: string;
 	hold?: HoldStatus;
+	new?: NewWithin;
 	sort?: string;
 }
 
 export interface MarketSearchParams extends CommonSearchParams {
-	platform?: string;
+	platform?: Marketplace;
+	new?: NewWithin;
 	sort?: string;
 }
 

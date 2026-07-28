@@ -74,6 +74,16 @@ This runs on a separate, much smaller quota — 10 per day and 100 per month on 
 
 Each has `list`, `paginate` and `export`, and its own parameter and result types — an expired result carries `status`, an NRD result carries `expiry_date`, a market result carries `marketplace`.
 
+### Filter notes
+
+`length` and `age_range` accept a preset band (`5-10`), an exact value (`10`), or a range (`8-12`, inclusive of both ends). `age_range` also takes a comma-separated list (`0-5,20+`).
+
+`new` takes `1`, `2` or `3` and restricts results to the last N observed days: on `expired` the domains that entered the expired pool (expired stage only), on `deleted` the domains that dropped, on `market` the listings that first appeared on a marketplace.
+
+`reg_date` on `nrds` accepts a day (`2026-07-10`), a month (`2026-07`), a year (`2026`), or a `from:to` range where either side may be omitted.
+
+`position` defaults to `contain` everywhere except `market`, which defaults to `start`; pass `contain` there to match anywhere in the name.
+
 ## Other endpoints
 
 ```ts
