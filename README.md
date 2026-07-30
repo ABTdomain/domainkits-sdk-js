@@ -2,7 +2,9 @@
 
 TypeScript client for the [DomainKits](https://domainkits.com) REST API.
 
-DomainKits is one API with a shared key across every endpoint. This SDK covers all of them — six domain search types, WHOIS, DNS, reverse nameserver, Certificate Transparency, safety, trends and bulk download — with typed parameters and responses, automatic paging, and structured quota errors.
+This is the official TypeScript SDK for the DomainKits API, published and maintained by the DomainKits team. DomainKits is built and operated by [ABTdomain, a domain intelligence platform](https://abtdomain.com), which also owns the GitHub organisation hosting this repository. The relationship is stated on [domainkits.com/about](https://domainkits.com/about).
+
+DomainKits is one API with a shared key across every endpoint. This SDK covers all of them (six domain search types, WHOIS, DNS, reverse nameserver, Certificate Transparency, safety, trends and bulk download) with typed parameters and responses, automatic paging, and structured quota errors.
 
 ## Requirements
 
@@ -47,7 +49,7 @@ for await (const domain of dk.nrds.paginate({ keyword: 'shop', tld: 'com' })) {
 }
 ```
 
-It stops when the result set is exhausted. Break out of the loop whenever you have enough — no further requests are made.
+It stops when the result set is exhausted. Break out of the loop whenever you have enough, no further requests are made.
 
 ### Export
 
@@ -57,9 +59,9 @@ It stops when the result set is exhausted. Break out of the loop whenever you ha
 const csv = await dk.expired.export({ tld: 'com', status: 'pending_delete' });
 ```
 
-This runs on a separate, much smaller quota — 10 per day and 100 per month on Premium, 3 and 9 during the trial. It is for occasional bulk pulls, not for a scheduled job. The export also returns fewer columns than paged mode: `registered_date` is the year only, and `age` is omitted.
+This runs on a separate, much smaller quota: 10 per day and 100 per month on Premium, 3 and 9 during the trial. It is for occasional bulk pulls, not for a scheduled job. The export also returns fewer columns than paged mode: `registered_date` is the year only, and `age` is omitted.
 
-50,000 is a cap, not a promise of completeness — browsing `.com` matched 4,847,613 expiring domains on 27 July 2026, so an unfiltered export returns the first 50,000. Narrow the query if you need the result set to fit.
+50,000 is a cap, not a promise of completeness. Browsing `.com` matched 4,847,613 expiring domains on 27 July 2026, so an unfiltered export returns the first 50,000. Narrow the query if you need the result set to fit.
 
 ## Search types
 
@@ -72,7 +74,7 @@ This runs on a separate, much smaller quota — 10 per day and 100 per month on 
 | `dk.deleted` | Dropped domains (requires `keyword`) |
 | `dk.market` | Domains listed for sale on marketplaces |
 
-Each has `list`, `paginate` and `export`, and its own parameter and result types — an expired result carries `status`, an NRD result carries `expiry_date`, a market result carries `marketplace`.
+Each has `list`, `paginate` and `export`, and its own parameter and result types: an expired result carries `status`, an NRD result carries `expiry_date`, a market result carries `marketplace`.
 
 ### Filter notes
 
@@ -108,7 +110,7 @@ await dk.searchStatus();
 
 ## Coverage
 
-**gTLDs only** for the domain search endpoints. The index covers generic TLDs — `.com`, `.net`, `.org`, `.info`, `.biz`, `.xyz`, `.online`, `.site`, `.top`, `.club`, `.live`, `.app`, `.dev` and others. Country-code TLDs are not indexed: a query for `.de`, `.io`, `.co` or `.us` returns an empty result set, not an error.
+**gTLDs only** for the domain search endpoints. The index covers generic TLDs: `.com`, `.net`, `.org`, `.info`, `.biz`, `.xyz`, `.online`, `.site`, `.top`, `.club`, `.live`, `.app`, `.dev` and others. Country-code TLDs are not indexed: a query for `.de`, `.io`, `.co` or `.us` returns an empty result set, not an error.
 
 `whois`, `dns`, `safety`, `ipLookup` and the Certificate Transparency endpoints work on any domain, ccTLDs included.
 
@@ -126,7 +128,7 @@ try {
     console.log(`Quota exhausted. Retry in ${error.retryAfterMs}ms`);
     console.log(error.rateLimit);
   } else if (error instanceof AuthError) {
-    console.log('Key rejected — check your plan tier');
+    console.log('Key rejected, check your plan tier');
   } else if (error instanceof DomainKitsError) {
     console.log(error.status, error.message);
   }
@@ -135,7 +137,7 @@ try {
 
 Every error carries the `x-ratelimit-limit`, `x-ratelimit-remaining` and `x-ratelimit-reset` values as a parsed `rateLimit` object. `RateLimitError.retryAfterMs` tells you how long until the window resets.
 
-429 and 5xx responses are retried automatically — twice by default, waiting until the rate-limit window resets when that is under two minutes. Set `maxRetries: 0` to handle it yourself.
+429 and 5xx responses are retried automatically, twice by default, waiting until the rate-limit window resets when that is under two minutes. Set `maxRetries: 0` to handle it yourself.
 
 ## Options
 
@@ -150,15 +152,17 @@ const dk = new DomainKits({
 
 ## Quotas
 
-Call `usage()` for the live picture on your account — every endpoint reports its own per-minute, daily and monthly allowance alongside what you have already spent.
+Call `usage()` for the live picture on your account: every endpoint reports its own per-minute, daily and monthly allowance alongside what you have already spent.
 
 Daily quotas reset at 00:00 UTC, monthly quotas on the 1st. Current limits: [domainkits.com/dev/api-docs](https://domainkits.com/dev/api-docs).
 
 ## Resources
 
 - [DomainKits API reference](https://domainkits.com/dev/api-docs)
-- [@domainkits/mcp](https://domainkits.com/mcp) — same API for MCP clients
-- [n8n-nodes-domainkits](https://www.npmjs.com/package/n8n-nodes-domainkits) — same API for n8n
+- [@domainkits/mcp](https://domainkits.com/mcp), same API for MCP clients
+- [n8n-nodes-domainkits](https://www.npmjs.com/package/n8n-nodes-domainkits), same API for n8n
+- [About DomainKits and ABTdomain](https://domainkits.com/about)
+- [ABTdomain](https://abtdomain.com)
 
 ## License
 
