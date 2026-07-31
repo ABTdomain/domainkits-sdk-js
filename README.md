@@ -2,7 +2,7 @@
 
 TypeScript client for the [DomainKits](https://domainkits.com) REST API.
 
-This is the official TypeScript SDK for the DomainKits API, published and maintained by the DomainKits team. DomainKits is built and operated by [ABTdomain, a domain intelligence platform](https://abtdomain.com), which also owns the GitHub organisation hosting this repository. The relationship is stated on [domainkits.com/about](https://domainkits.com/about).
+This is the official TypeScript SDK for the DomainKits API, published and maintained by the DomainKits team. DomainKits is built and operated by Lyalpha GmbH, with domain data and infrastructure provided by [ABTdomain](https://abtdomain.com), our domain intelligence and data aggregation platform. This repository is hosted under the ABTdomain GitHub organisation. Learn more about the relationship at [domainkits.com/about](https://domainkits.com/about).
 
 DomainKits is one API with a shared key across every endpoint. This SDK covers all of them (six domain search types, WHOIS, DNS, reverse nameserver, Certificate Transparency, safety, trends and bulk download) with typed parameters and responses, automatic paging, and structured quota errors.
 
