@@ -1,6 +1,6 @@
 {
 	"name": "@domainkits/sdk",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"description": "TypeScript client for the DomainKits REST API. Search expiring, newly registered, aged, active, deleted and marketplace domains, plus WHOIS, DNS, Certificate Transparency and trends.",
 	"license": "MIT",
 	"homepage": "https://domainkits.com/dev",

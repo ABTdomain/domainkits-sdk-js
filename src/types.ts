@@ -49,6 +49,11 @@ export interface NrdsSearchParams extends CommonSearchParams {
 	sort?: string;
 }
 
+export interface NrdsLiveSearchParams extends CommonSearchParams {
+	days_range?: '0-10' | '10-20' | '20+';
+	sort?: 'alpha' | 'length_desc' | 'length_asc' | 'reg_date_desc' | 'reg_date_asc';
+}
+
 export interface AgedSearchParams extends CommonSearchParams {
 	age_range?: string;
 	has_sale?: boolean;
@@ -87,6 +92,13 @@ export interface NrdDomain {
 	registered_date?: string;
 	expiry_date?: string;
 	tld_count?: number;
+}
+
+export interface NrdLiveDomain {
+	domain: string;
+	registered_date?: string;
+	expiry_date?: string;
+	tld?: string;
 }
 
 export interface AgedDomain {
@@ -303,20 +315,34 @@ export interface CtCertificate {
 	idx?: number;
 }
 
-export interface CtCertsParams {
-	domain?: string;
-	fingerprint?: string;
+export type CtScope = 'valid' | 'all';
+export type CtField = 'domain' | 'reg' | 'sld';
+export type CtSort = 'newest' | 'latest';
+export type CtCertType = 'DV' | 'EV' | 'OV';
+
+export interface CtCommonParams {
+	after?: string;
+	before?: string;
+	scope?: CtScope;
+	sort?: CtSort;
 	issuer?: string;
-	cert_type?: string;
+	cert_type?: CtCertType;
+	limit?: number;
 }
 
-export interface CtSearchParams {
+export interface CtCertsParams extends CtCommonParams {
+	domain?: string;
+	fingerprint?: string;
+}
+
+export interface CtSearchParams extends CtCommonParams {
 	keyword: string;
-	field?: string;
-	sort?: string;
-	issuer?: string;
-	cert_type?: string;
+	field?: CtField;
 	tld?: string;
+}
+
+export interface CtSubdomainsParams extends CtCommonParams {
+	domain: string;
 }
 
 export type TrendsTldType = 'active' | 'newly';

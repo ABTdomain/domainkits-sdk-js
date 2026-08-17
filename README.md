@@ -4,7 +4,7 @@ TypeScript client for the [DomainKits](https://domainkits.com) REST API.
 
 This is the official TypeScript SDK for the DomainKits API, published and maintained by the DomainKits team. DomainKits is built and operated by Lyalpha GmbH, with domain data and infrastructure provided by [ABTdomain](https://abtdomain.com), our domain intelligence and data aggregation platform. This repository is hosted under the ABTdomain GitHub organisation. Learn more about the relationship at [domainkits.com/about](https://domainkits.com/about).
 
-DomainKits is one API with a shared key across every endpoint. This SDK covers all of them (six domain search types, WHOIS, DNS, reverse nameserver, Certificate Transparency, safety, trends and bulk download) with typed parameters and responses, automatic paging, and structured quota errors.
+DomainKits is one API with a shared key across every endpoint. This SDK covers all of them (seven domain search types, WHOIS, DNS, reverse nameserver, Certificate Transparency, safety, trends and bulk download) with typed parameters and responses, automatic paging, and structured quota errors.
 
 ## Requirements
 
@@ -68,7 +68,8 @@ This runs on a separate, much smaller quota: 10 per day and 100 per month on Pre
 | Method | What it searches |
 |---|---|
 | `dk.expired` | Domains in the deletion cycle: expired, redemption, pending delete |
-| `dk.nrds` | Newly registered domains, last 60 days |
+| `dk.nrds` | Newly registered domains, last 60 days, from the zone files |
+| `dk.nrdsLive` | Newly registered domains, last 3 days, from Certificate Transparency |
 | `dk.aged` | Domains with 5 to 20+ years of registration history |
 | `dk.active` | Currently registered domains |
 | `dk.deleted` | Dropped domains (requires `keyword`) |
@@ -86,6 +87,14 @@ Each has `list`, `paginate` and `export`, and its own parameter and result types
 
 `position` defaults to `contain` everywhere except `market`, which defaults to `start`; pass `contain` there to match anywhere in the name.
 
+### nrds and nrdsLive
+
+Two registration feeds, read from different places, so they answer different questions.
+
+`nrds` reads the zone files and holds 60 days. It is the complete view for the generic TLDs and the one to use for anything that looks back more than a few days.
+
+`nrdsLive` reads Certificate Transparency and holds 3 days. A name reaches it once a certificate is issued, which can be before the zone files carry it, so it surfaces names `nrds` cannot show yet. It also reaches `.ai` and `.io`, which the zone based feeds do not carry. A row carries `tld` rather than `tld_count`, and the endpoint runs on a smaller per-minute quota than `nrds`.
+
 ## Other endpoints
 
 ```ts
@@ -100,17 +109,25 @@ await dk.registrar('godaddy');
 await dk.statusGuide('clientHold');
 await dk.monitorChanges({ tld: 'com', reason: 'transfer' });
 await dk.ctSubdomains('example.com');
-await dk.ctCerts({ domain: 'example.com' });
-await dk.ctSearch({ keyword: 'example' });
+await dk.ctCerts({ domain: 'example.com', after: '2026-08-01', scope: 'all' });
+await dk.ctSearch({ keyword: 'example', field: 'sld', sort: 'newest' });
 await dk.tldTrends('newly', { tld: 'com' });
 await dk.keywordTrends('hot');
 await dk.usage();
 await dk.searchStatus();
 ```
 
+### Certificate Transparency notes
+
+`ctSubdomains`, `ctCerts` and `ctSearch` share `after`, `before`, `scope`, `sort`, `issuer`, `cert_type` and `limit`.
+
+`scope` decides how far back the read goes. `valid` covers the running half year and answers quickly; `all` reaches back to 2020 and costs more time. `after` and `before` take `YYYY-MM-DD` and filter on log time, so a date window is a better way to ask for recent activity than relying on the result order.
+
+`field` on `ctSearch` decides where the keyword has to appear. `reg` matches the registered domain and returns every hostname under it, so one busy site can fill the result set. `sld` matches the subdomain label only, which skips those and leaves the cases where the keyword sits in front of an unrelated registration. `domain` matches anywhere in the full hostname.
+
 ## Coverage
 
-**gTLDs only** for the domain search endpoints. The index covers generic TLDs: `.com`, `.net`, `.org`, `.info`, `.biz`, `.xyz`, `.online`, `.site`, `.top`, `.club`, `.live`, `.app`, `.dev` and others. Country-code TLDs are not indexed: a query for `.de`, `.io`, `.co` or `.us` returns an empty result set, not an error.
+**gTLDs only** for the zone based domain search endpoints. The index covers generic TLDs: `.com`, `.net`, `.org`, `.info`, `.biz`, `.xyz`, `.online`, `.site`, `.top`, `.club`, `.live`, `.app`, `.dev` and others. Country-code TLDs are not indexed: a query for `.de`, `.co` or `.us` returns an empty result set, not an error. `nrdsLive` is the exception and also carries `.ai` and `.io`.
 
 `whois`, `dns`, `safety`, `ipLookup` and the Certificate Transparency endpoints work on any domain, ccTLDs included.
 
