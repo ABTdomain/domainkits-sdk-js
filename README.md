@@ -95,6 +95,8 @@ Two registration feeds, read from different places, so they answer different que
 
 `nrdsLive` reads Certificate Transparency and holds 3 days. A name reaches it once a certificate is issued, which can be before the zone files carry it, so it surfaces names `nrds` cannot show yet. It also reaches `.ai` and `.io`, which the zone based feeds do not carry. A row carries `tld` rather than `tld_count`, and the endpoint runs on a smaller per-minute quota than `nrds`.
 
+The two feeds also date their rows differently, and deliberately so. `nrdsLive` returns a full timestamp, `2026-08-17T18:42:29Z`, because on a feed this fresh the hour a name was registered is the answer you came for. `nrds` returns a plain date, `2026-08-17`, because across a 60 day window the hour has stopped meaning anything. Both are typed `string`; parse accordingly.
+
 ## Other endpoints
 
 ```ts
@@ -124,6 +126,8 @@ await dk.searchStatus();
 `scope` decides how far back the read goes. `valid` covers the running half year and answers quickly; `all` reaches back to 2020 and costs more time. `after` and `before` take `YYYY-MM-DD` and filter on log time, so a date window is a better way to ask for recent activity than relying on the result order.
 
 `field` on `ctSearch` decides where the keyword has to appear. `reg` matches the registered domain and returns every hostname under it, so one busy site can fill the result set. `sld` matches the subdomain label only, which skips those and leaves the cases where the keyword sits in front of an unrelated registration. `domain` matches anywhere in the full hostname.
+
+`san_list` on a `ctCerts` record is one string, not an array: the subject alternative names joined by `|`, as in `*.example.com|example.com`. Split on `|` to get the names.
 
 ## Coverage
 

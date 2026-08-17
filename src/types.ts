@@ -310,7 +310,7 @@ export interface CtCertificate {
 	issue_time?: string;
 	log_time?: string;
 	not_after?: string;
-	san_list?: string[];
+	san_list?: string;
 	source?: string;
 	idx?: number;
 }
