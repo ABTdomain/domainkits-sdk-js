@@ -1,6 +1,6 @@
 # @domainkits/sdk
 
-TypeScript client for the [DomainKits](https://domainkits.com) REST API.
+TypeScript client for the [DomainKits](https://domainkits.com) REST API. Tracks API version 0.3.5.
 
 This is the official TypeScript SDK for the DomainKits API, published and maintained by the DomainKits team. DomainKits is built and operated by Lyalpha GmbH, with domain data and infrastructure provided by [ABTdomain](https://abtdomain.com), our domain intelligence and data aggregation platform. This repository is hosted under the ABTdomain GitHub organisation. Learn more about the relationship at [domainkits.com/about](https://domainkits.com/about).
 
@@ -26,16 +26,17 @@ import { DomainKits } from '@domainkits/sdk';
 const dk = new DomainKits(process.env.DOMAINKITS_API_KEY!);
 
 const { data, total } = await dk.nrds.list({
-  keyword: 'shop',
+  query: 'shop',
   tld: 'com',
-  reg_date: '2026-07-10',
-  no_number: true,
-  no_hyphen: true,
+  create_date_start: '2026-07-10',
+  create_date_end: '2026-07-10',
+  has_number: false,
+  has_hyphen: false,
 });
 
 console.log(`${total} matches`);
 for (const d of data) {
-  console.log(d.domain, d.registered_date, d.expiry_date);
+  console.log(d.domain, d.created, d.expires);
 }
 ```
 
@@ -44,7 +45,7 @@ for (const d of data) {
 A single request returns at most 500 results. `paginate` walks the whole result set for you:
 
 ```ts
-for await (const domain of dk.nrds.paginate({ keyword: 'shop', tld: 'com' })) {
+for await (const domain of dk.nrds.paginate({ query: 'shop', tld: 'com' })) {
   console.log(domain.domain);
 }
 ```
@@ -59,7 +60,7 @@ It stops when the result set is exhausted. Break out of the loop whenever you ha
 const csv = await dk.expired.export({ tld: 'com', status: 'pending_delete' });
 ```
 
-This runs on a separate, much smaller quota: 10 per day and 100 per month on Premium, 3 and 9 during the trial. It is for occasional bulk pulls, not for a scheduled job. The export also returns fewer columns than paged mode: `registered_date` is the year only, and `age` is omitted.
+This runs on a separate, much smaller quota with a monthly cap; call `usage()` for your account's numbers. It is for occasional bulk pulls, not for a scheduled job. Export columns match the endpoint's JSON fields.
 
 50,000 is a cap, not a promise of completeness. Browsing `.com` matched 4,847,613 expiring domains on 27 July 2026, so an unfiltered export returns the first 50,000. Narrow the query if you need the result set to fit.
 
@@ -72,18 +73,18 @@ This runs on a separate, much smaller quota: 10 per day and 100 per month on Pre
 | `dk.nrdsLive` | Newly registered domains, last 3 days, from Certificate Transparency |
 | `dk.aged` | Domains with 5 to 20+ years of registration history |
 | `dk.active` | Currently registered domains |
-| `dk.deleted` | Dropped domains (requires `keyword`) |
+| `dk.deleted` | Dropped domains |
 | `dk.market` | Domains listed for sale on marketplaces |
 
-Each has `list`, `paginate` and `export`, and its own parameter and result types: an expired result carries `status`, an NRD result carries `expiry_date`, a market result carries `marketplace`.
+Each has `list`, `paginate` and `export`, and its own parameter and result types: an expired result carries `status`, an NRD result carries `expires`, a market result carries `platform`.
 
 ### Filter notes
 
-`length` and `age_range` accept a preset band (`5-10`), an exact value (`10`), or a range (`8-12`, inclusive of both ends). `age_range` also takes a comma-separated list (`0-5,20+`).
+Numeric ranges are `_min`/`_max` pairs (`length_min`/`length_max`, `age_min`/`age_max`), date ranges are `_start`/`_end` pairs (`create_date_start`/`create_date_end`, `found_date_start`/`found_date_end`); either side may be omitted, equal bounds select an exact value.
 
-`new` takes `1`, `2` or `3` and restricts results to the last N observed days: on `expired` the domains that entered the expired pool (expired stage only), on `deleted` the domains that dropped, on `market` the listings that first appeared on a marketplace.
+Composition filters (`has_number`, `all_number`, `all_alpha`, `has_hyphen`, `has_sale`) accept only `true`/`false`. Unknown parameter names and values return 400 with the supported values in the error message.
 
-`reg_date` on `nrds` accepts a day (`2026-07-10`), a month (`2026-07`), a year (`2026`), or a `from:to` range where either side may be omitted.
+The full parameter and field reference per endpoint is the [OpenAPI spec](https://domainkits.com/dev/openapi.yaml); the TypeScript types mirror it.
 
 `position` defaults to `contain` everywhere except `market`, which defaults to `start`; pass `contain` there to match anywhere in the name.
 
@@ -93,7 +94,7 @@ Two registration feeds, read from different places, so they answer different que
 
 `nrds` reads the zone files and holds 60 days. It is the complete view for the generic TLDs and the one to use for anything that looks back more than a few days.
 
-`nrdsLive` reads Certificate Transparency and holds 3 days. A name reaches it once a certificate is issued, which can be before the zone files carry it, so it surfaces names `nrds` cannot show yet. It also reaches `.ai` and `.io`, which the zone based feeds do not carry. A row carries `tld` rather than `tld_count`, and the endpoint runs on a smaller per-minute quota than `nrds`.
+`nrdsLive` holds the last 3 days with live updates, so it surfaces names registered hours ago that `nrds` cannot show yet, and it also reaches `.ai` and `.io`. Same parameter vocabulary; `tld` takes a single value there, rows never carry `tld_count`, and the endpoint runs on a smaller per-minute quota than `nrds`.
 
 The two feeds also date their rows differently, and deliberately so. `nrdsLive` returns a full timestamp, `2026-08-17T18:42:29Z`, because on a feed this fresh the hour a name was registered is the answer you came for. `nrds` returns a plain date, `2026-08-17`, because across a 60 day window the hour has stopped meaning anything. Both are typed `string`; parse accordingly.
 
@@ -109,7 +110,7 @@ await dk.typosquat({ domain: 'example.com' });
 await dk.ipLookup('8.8.8.8');
 await dk.registrar('godaddy');
 await dk.statusGuide('clientHold');
-await dk.monitorChanges({ tld: 'com', reason: 'transfer' });
+await dk.monitorChanges({ tld: 'com', reason: 'domain_transfer' });
 await dk.ctSubdomains('example.com');
 await dk.ctCerts({ domain: 'example.com', after: '2026-08-01', scope: 'all' });
 await dk.ctSearch({ keyword: 'example', field: 'sld', sort: 'newest' });

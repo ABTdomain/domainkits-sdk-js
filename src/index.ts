@@ -18,12 +18,14 @@ import type {
 	ExpiredSearchParams,
 	MarketDomain,
 	MarketSearchParams,
+	DomainChange,
 	MonitorChangesParams,
 	NrdDomain,
 	NrdLiveDomain,
 	NrdsLiveSearchParams,
 	NrdsSearchParams,
 	NsReverseParams,
+	NsReverseResult,
 	SafetyReport,
 	RegistrarResult,
 	SearchResult,
@@ -143,19 +145,16 @@ export class DomainKits {
 		return this.client.requestEnvelope<TldCheckResult>('/tld-check', toQuery(params));
 	}
 
-	nsReverse(params: NsReverseParams): Promise<SearchResult<string>> {
-		return this.client.requestList<string>('/ns-reverse', toQuery(params));
+	nsReverse(params: NsReverseParams): Promise<NsReverseResult> {
+		return this.client.requestEnvelope<NsReverseResult>('/ns-reverse', toQuery(params));
 	}
 
 	typosquat(params: TyposquatParams): Promise<TyposquatResult> {
 		return this.client.requestEnvelope<TyposquatResult>('/typosquat', toQuery(params));
 	}
 
-	monitorChanges(params: MonitorChangesParams = {}): Promise<SearchResult<Record<string, unknown>>> {
-		return this.client.requestList<Record<string, unknown>>(
-			'/monitor/changes',
-			toQuery(params),
-		);
+	monitorChanges(params: MonitorChangesParams = {}): Promise<SearchResult<DomainChange>> {
+		return this.client.requestList<DomainChange>('/monitor/changes', toQuery(params));
 	}
 
 	ctSubdomains(

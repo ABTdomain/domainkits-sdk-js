@@ -1,131 +1,155 @@
 export type ExpiryStage = 'expired' | 'redemption' | 'pending_delete';
-export type KeywordPosition = 'start' | 'end' | 'middle' | 'contain';
-export type Composition = 'all_alpha' | 'all_number';
-export type LengthRange = '<5' | '5-10' | '10-15' | '15+' | (string & {});
-export type HoldStatus = 'no_hold' | 'has_hold';
-export type NewWithin = '1' | '2' | '3';
-export type Marketplace =
-	| 'Afternic'
-	| 'Atom'
-	| 'BuyDomains'
-	| 'Dan'
-	| 'DDD'
-	| 'DN.com'
-	| 'Godaddy'
-	| 'Hugedomains'
-	| 'SawSells'
-	| 'Sedo'
-	| 'Venture'
-	| '4.cn'
-	| (string & {});
+export type KeywordPosition = 'start' | 'end' | 'middle';
 
 export interface CommonSearchParams {
-	keyword?: string;
+	/** Substring of the name portion, min 2 characters. */
+	query?: string;
+	/** Comma-separated, up to 10 on the search endpoints; single value on nrds-live. */
 	tld?: string;
+	/** Requires query; omit to match anywhere. */
 	position?: KeywordPosition;
-	exclude?: string;
-	length?: LengthRange;
-	type?: Composition;
-	no_hyphen?: boolean;
-	no_number?: boolean;
+	/** Negative keywords, comma-separated. */
+	exclude_query?: string;
+	length_min?: number;
+	length_max?: number;
+	has_number?: boolean;
+	all_number?: boolean;
+	all_alpha?: boolean;
+	has_hyphen?: boolean;
+	sort?: string;
 	limit?: number;
 	offset?: number;
 }
 
-export interface ExpiredSearchParams extends CommonSearchParams {
-	status?: ExpiryStage;
-	age_range?: string;
-	auction_date?: string;
-	hold?: HoldStatus;
-	new?: NewWithin;
-	sort?: 'age_desc' | 'age_asc' | 'length_asc' | 'length_desc';
-}
-
 export interface NrdsSearchParams extends CommonSearchParams {
-	days_range?: '0-10' | '10-20' | '20+';
-	reg_date?: string;
-	period?: '1' | '2-5' | '6+' | '2+' | '1-5';
+	create_date_start?: string;
+	create_date_end?: string;
+	period_min?: number;
+	period_max?: number;
 	has_sale?: boolean;
-	sort?: string;
 }
 
 export interface NrdsLiveSearchParams extends CommonSearchParams {
-	days_range?: '0-10' | '10-20' | '20+';
-	sort?: 'alpha' | 'length_desc' | 'length_asc' | 'reg_date_desc' | 'reg_date_asc';
+	create_date_start?: string;
+	create_date_end?: string;
+}
+
+export interface ExpiredSearchParams extends CommonSearchParams {
+	status?: ExpiryStage;
+	age_min?: number;
+	age_max?: number;
+	found_date_start?: string;
+	found_date_end?: string;
+	auction_date_start?: string;
+	auction_date_end?: string;
+	has_hold?: boolean;
 }
 
 export interface AgedSearchParams extends CommonSearchParams {
-	age_range?: string;
+	age_min?: number;
+	age_max?: number;
 	has_sale?: boolean;
-	sort?: string;
 }
 
 export interface ActiveSearchParams extends CommonSearchParams {
-	status?: string;
-	sort?: string;
+	has_sale?: boolean;
 }
 
 export interface DeletedSearchParams extends CommonSearchParams {
-	keyword: string;
-	age_range?: string;
-	hold?: HoldStatus;
-	new?: NewWithin;
-	sort?: string;
+	age_min?: number;
+	age_max?: number;
+	found_date_start?: string;
+	found_date_end?: string;
+	has_hold?: boolean;
 }
 
 export interface MarketSearchParams extends CommonSearchParams {
-	platform?: Marketplace;
-	new?: NewWithin;
-	sort?: string;
-}
-
-export interface ExpiredDomain {
-	domain: string;
-	age?: number;
-	registered_date?: string;
-	status?: string;
-	tld_count?: number;
+	/** Comma-separated marketplace names, case-insensitive. */
+	platform?: string;
+	listed_days_min?: number;
+	listed_days_max?: number;
+	has_sale?: boolean;
 }
 
 export interface NrdDomain {
 	domain: string;
-	registered_date?: string;
-	expiry_date?: string;
-	tld_count?: number;
+	tld: string;
+	created: string;
+	expires: string;
+	period: number;
+	length: number;
+	tld_count: number;
+	components: string[] | null;
+	for_sale: string;
 }
 
 export interface NrdLiveDomain {
 	domain: string;
-	registered_date?: string;
-	expiry_date?: string;
-	tld?: string;
+	tld: string;
+	/** Full timestamp; the live feed carries time of day. */
+	created: string;
+	expires: string;
+	length: number;
+	components: string[] | null;
+}
+
+export interface ExpiredDomain {
+	domain: string;
+	tld: string;
+	created: string;
+	age: number;
+	status: string;
+	auction_date: string;
+	found_date: string;
+	length: number;
+	category: string;
+	majestic: number | null;
+	backlinks: number | null;
+	hold: string;
+	tld_count: number;
 }
 
 export interface AgedDomain {
 	domain: string;
-	age?: number;
-	registered_date?: string;
-	tld_count?: number;
+	tld: string;
+	created: string;
+	age: number;
+	length: number;
+	components: string[] | null;
+	for_sale: string;
+	tld_count: number;
 }
 
 export interface ActiveDomain {
 	domain: string;
-	tld_count?: number;
+	tld: string;
+	length: number;
+	for_sale: string;
+	tld_count: number;
 }
 
 export interface DeletedDomain {
 	domain: string;
-	age?: number;
-	registered_date?: string;
-	tld_count?: number;
+	tld: string;
+	age: number;
+	reg_year: string;
+	exp_year: string;
+	found_date: string;
+	length: number;
+	components: string[] | null;
+	hold: string;
+	tld_count: number;
 }
 
 export interface MarketDomain {
 	domain: string;
-	marketplace?: string;
-	tld?: string;
-	price?: number;
-	tld_count?: number;
+	tld: string;
+	length: number;
+	components: string[] | null;
+	for_sale: string;
+	platform: string;
+	listed_days: number | null;
+	tld_count: number;
 }
 
 export interface SearchResult<T> {
@@ -178,20 +202,23 @@ export interface DnsRecords {
 	process_time_seconds?: number;
 }
 
-export interface NsReverseParams {
+export interface NsReverseParams extends CommonSearchParams {
 	ns: string;
-	tld?: string;
-	keyword?: string;
-	sort?: string;
-	type?: Composition;
-	no_number?: boolean;
-	no_hyphen?: boolean;
-	pure_alpha?: boolean;
-	pure_digit?: boolean;
-	min_len?: number;
-	max_len?: number;
-	limit?: number;
-	offset?: number;
+}
+
+export interface NsReverseDomain {
+	domain: string;
+	tld: string;
+	length: number;
+}
+
+export interface NsReverseResult {
+	data: NsReverseDomain[];
+	/** Matches after filters. */
+	total: number;
+	/** Domains on this nameserver before filters. */
+	ns_total: number;
+	ns: string;
 }
 
 export interface SafetyReport {
@@ -253,11 +280,30 @@ export interface TldCheckParams {
 	tlds?: string | string[];
 }
 
+export type TyposquatType =
+	| 'omission'
+	| 'transposition'
+	| 'replacement'
+	| 'insertion'
+	| 'repetition'
+	| 'hyphenation'
+	| 'vowel-swap'
+	| 'homoglyph'
+	| 'plural'
+	| 'exact-tld'
+	| 'tld-swap'
+	| 'combosquatting'
+	| 'idn-homograph';
+
 export interface TyposquatVariant {
 	domain: string;
+	tld: string;
+	type: TyposquatType;
 	registered: boolean;
-	type?: string;
-	status?: 'registered' | 'for_sale' | 'expiring';
+	/** Marketplace listing code; empty string when not listed. */
+	for_sale: string;
+	expiring: boolean;
+	tld_count: number;
 	latest_whois?: {
 		created?: string;
 		updated?: string;
@@ -270,30 +316,51 @@ export interface TyposquatVariant {
 
 export interface TyposquatResult {
 	data: TyposquatVariant[];
+	/** Matches after the types and registered filters. */
 	total: number;
 	domain: string;
-	variants_generated: number;
-	variants_registered: number;
+	/** Unique variants generated, before filters. */
+	generated: number;
+	/** Variants observed as registered, before filters. */
+	registered_total: number;
+	limit: number;
+	offset: number;
 	whois_note?: string;
 }
 
 export interface TyposquatParams {
 	domain: string;
+	/** Comma-separated variant classes; omit for all 13. */
+	types?: string;
+	/** true keeps registered variants, false the unregistered ones; omit for both. */
+	registered?: boolean;
 	whois?: boolean;
-	type?: string;
-	unregistered?: boolean;
-}
-
-export interface MonitorChangesParams {
-	keyword?: string;
-	tld?: string;
-	reason?: string;
-	length?: number;
-	no_number?: boolean;
-	type?: 'all_number';
-	has_digit?: boolean;
 	limit?: number;
 	offset?: number;
+}
+
+export type ChangeReason =
+	| 'new_registration'
+	| 'domain_transfer'
+	| 'domain_expired'
+	| 'nameserver_change';
+
+export interface MonitorChangesParams extends CommonSearchParams {
+	reason?: ChangeReason;
+	found_date_start?: string;
+	found_date_end?: string;
+}
+
+export interface DomainChange {
+	domain: string;
+	tld: string;
+	found_date: string;
+	reason: ChangeReason;
+	details_old: string;
+	details_new: string;
+	length: number;
+	tld_count: number;
+	components: string[] | null;
 }
 
 export interface CtHostname {
