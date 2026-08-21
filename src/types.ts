@@ -2,13 +2,9 @@ export type ExpiryStage = 'expired' | 'redemption' | 'pending_delete';
 export type KeywordPosition = 'start' | 'end' | 'middle';
 
 export interface CommonSearchParams {
-	/** Substring of the name portion, min 2 characters. */
 	query?: string;
-	/** Comma-separated, up to 10 on the search endpoints; single value on nrds-live. */
 	tld?: string;
-	/** Requires query; omit to match anywhere. */
 	position?: KeywordPosition;
-	/** Negative keywords, comma-separated. */
 	exclude_query?: string;
 	length_min?: number;
 	length_max?: number;
@@ -64,7 +60,6 @@ export interface DeletedSearchParams extends CommonSearchParams {
 }
 
 export interface MarketSearchParams extends CommonSearchParams {
-	/** Comma-separated marketplace names, case-insensitive. */
 	platform?: string;
 	listed_days_min?: number;
 	listed_days_max?: number;
@@ -86,7 +81,6 @@ export interface NrdDomain {
 export interface NrdLiveDomain {
 	domain: string;
 	tld: string;
-	/** Full timestamp; the live feed carries time of day. */
 	created: string;
 	expires: string;
 	length: number;
@@ -214,9 +208,7 @@ export interface NsReverseDomain {
 
 export interface NsReverseResult {
 	data: NsReverseDomain[];
-	/** Matches after filters. */
 	total: number;
-	/** Domains on this nameserver before filters. */
 	ns_total: number;
 	ns: string;
 }
@@ -300,7 +292,6 @@ export interface TyposquatVariant {
 	tld: string;
 	type: TyposquatType;
 	registered: boolean;
-	/** Marketplace listing code; empty string when not listed. */
 	for_sale: string;
 	expiring: boolean;
 	tld_count: number;
@@ -316,12 +307,9 @@ export interface TyposquatVariant {
 
 export interface TyposquatResult {
 	data: TyposquatVariant[];
-	/** Matches after the types and registered filters. */
 	total: number;
 	domain: string;
-	/** Unique variants generated, before filters. */
 	generated: number;
-	/** Variants observed as registered, before filters. */
 	registered_total: number;
 	limit: number;
 	offset: number;
@@ -330,9 +318,7 @@ export interface TyposquatResult {
 
 export interface TyposquatParams {
 	domain: string;
-	/** Comma-separated variant classes; omit for all 13. */
 	types?: string;
-	/** true keeps registered variants, false the unregistered ones; omit for both. */
 	registered?: boolean;
 	whois?: boolean;
 	limit?: number;
