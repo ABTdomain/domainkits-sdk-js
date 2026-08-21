@@ -231,31 +231,48 @@ export interface SafetyReport {
 
 export interface IpLookup {
 	ip: string;
-	connection?: { asn?: number; isp?: string; org?: string };
-	location?: {
-		city?: string;
-		country?: string;
-		country_code?: string;
-		continent?: string;
-		continent_code?: string;
-		latitude?: number;
-		longitude?: number;
-	};
-	attribution?: string;
+	type: string;
+	asn: number | null;
+	as_organization: string;
+	continent: string;
+	continent_code: string;
+	country: string;
+	country_code: string;
+	is_eu: boolean;
+	region: string;
+	region_code: string;
+	city: string;
+	postal: string;
+	latitude: number | null;
+	longitude: number | null;
+	timezone: string;
 }
 
 export interface RegistrarEntry {
 	id: string;
 	name: string;
-	status?: string;
-	country?: string;
-	rdap_url?: string;
-	contact?: string;
+	status: string;
+	rdap_url: string;
+	is_drop_catch: boolean;
+	parent_id: string;
+	parent_name: string;
+	country: string;
+	contact: string;
+	website: string;
+	address: string;
+	phone: string;
+	email: string;
+	rdap_fetched: boolean;
 }
 
-export interface RegistrarResult {
-	query: string;
-	results: RegistrarEntry[];
+export interface StatusGuideEntry {
+	status: string;
+	aliases: string[];
+	category: string;
+	description: string;
+	action: string;
+	severity: string;
+	possible_reasons: string;
 }
 
 export type TldAvailability = 'registered' | 'available' | string;
@@ -368,15 +385,13 @@ export interface CtCertificate {
 	idx?: number;
 }
 
-export type CtScope = 'valid' | 'all';
-export type CtField = 'domain' | 'reg' | 'sld';
+export type CtField = 'reg' | 'sld';
 export type CtSort = 'newest' | 'latest';
 export type CtCertType = 'DV' | 'EV' | 'OV';
 
 export interface CtCommonParams {
 	after?: string;
 	before?: string;
-	scope?: CtScope;
 	sort?: CtSort;
 	issuer?: string;
 	cert_type?: CtCertType;

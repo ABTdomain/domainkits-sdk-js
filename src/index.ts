@@ -27,8 +27,9 @@ import type {
 	NsReverseParams,
 	NsReverseResult,
 	SafetyReport,
-	RegistrarResult,
+	RegistrarEntry,
 	SearchResult,
+	StatusGuideEntry,
 	TldCheckParams,
 	TldCheckResult,
 	TrendsKeywordType,
@@ -129,16 +130,20 @@ export class DomainKits {
 		return this.client.request<SafetyReport>('/safety', { domain });
 	}
 
-	ipLookup(query: string): Promise<IpLookup> {
-		return this.client.request<IpLookup>('/ip-lookup', { query });
+	async ipLookup(query: string): Promise<IpLookup | null> {
+		const { data } = await this.client.requestList<IpLookup>('/ip-lookup', { query });
+		return data[0] ?? null;
 	}
 
-	registrar(query: string): Promise<RegistrarResult> {
-		return this.client.request<RegistrarResult>('/registrar', { query });
+	registrar(
+		query: string,
+		params: { limit?: number; offset?: number } = {},
+	): Promise<SearchResult<RegistrarEntry>> {
+		return this.client.requestList<RegistrarEntry>('/registrar', { query, ...params });
 	}
 
-	statusGuide(query?: string): Promise<Record<string, unknown>> {
-		return this.client.request<Record<string, unknown>>('/status-guide', { query });
+	statusGuide(query?: string): Promise<SearchResult<StatusGuideEntry>> {
+		return this.client.requestList<StatusGuideEntry>('/status-guide', { query });
 	}
 
 	tldCheck(params: TldCheckParams): Promise<TldCheckResult> {
