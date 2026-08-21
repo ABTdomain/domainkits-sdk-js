@@ -4,6 +4,9 @@ import type {
 	ActiveSearchParams,
 	AgedDomain,
 	AgedSearchParams,
+	BulkDnsEntry,
+	BulkResult,
+	BulkWhoisEntry,
 	CommonSearchParams,
 	CtCertificate,
 	CtCertsParams,
@@ -70,7 +73,7 @@ class SearchResource<P extends CommonSearchParams, R> {
 			for (const item of data) yield item;
 
 			offset += data.length;
-			if (data.length === 0 || data.length < limit || offset >= total) return;
+			if (data.length === 0 || offset >= total) return;
 		}
 	}
 
@@ -124,6 +127,14 @@ export class DomainKits {
 
 	dns(domain: string): Promise<DnsRecords> {
 		return this.client.request<DnsRecords>('/dns', { domain });
+	}
+
+	bulkDns(domains: string[]): Promise<BulkResult<BulkDnsEntry>> {
+		return this.client.requestBulk<BulkDnsEntry>('/bulk/dns', { domains });
+	}
+
+	bulkWhois(domains: string[]): Promise<BulkResult<BulkWhoisEntry>> {
+		return this.client.requestBulk<BulkWhoisEntry>('/bulk/whois', { domains });
 	}
 
 	safety(domain: string): Promise<SafetyReport> {

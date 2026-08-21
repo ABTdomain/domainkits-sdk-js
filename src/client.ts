@@ -98,7 +98,11 @@ export class DomainKitsClient {
 		this.fetchImpl = options.fetch ?? globalThis.fetch;
 	}
 
-	async requestRaw(path: string, params: Record<string, unknown> = {}): Promise<Response> {
+	async requestRaw(
+		path: string,
+		params: Record<string, unknown> = {},
+		payload?: unknown,
+	): Promise<Response> {
 		const url = new URL(this.baseUrl + path);
 		for (const [key, value] of Object.entries(params)) {
 			if (value === undefined || value === null || value === '') continue;
@@ -112,8 +116,15 @@ export class DomainKitsClient {
 			const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
 			try {
+				const headers: Record<string, string> = {
+					Authorization: `Bearer ${this.apiKey}`,
+					Accept: 'application/json',
+				};
+				if (payload !== undefined) headers['Content-Type'] = 'application/json';
 				const response = await this.fetchImpl(url, {
-					headers: { Authorization: `Bearer ${this.apiKey}`, Accept: 'application/json' },
+					method: payload === undefined ? 'GET' : 'POST',
+					headers,
+					body: payload === undefined ? undefined : JSON.stringify(payload),
 					signal: controller.signal,
 				});
 
@@ -200,6 +211,25 @@ export class DomainKitsClient {
 		}
 
 		return envelope as T;
+	}
+
+	async requestBulk<T>(
+		path: string,
+		payload: unknown,
+	): Promise<{ data: T[]; total: number; registered: number }> {
+		const response = await this.requestRaw(path, {}, payload);
+		const envelope = (await response.json()) as Envelope<T[]> & { registered?: number };
+
+		if (envelope.success === false) {
+			throw new DomainKitsError(
+				envelope.error ?? 'DomainKits API returned an error',
+				response.status,
+				readRateLimit(response.headers),
+			);
+		}
+
+		const data = Array.isArray(envelope.data) ? envelope.data : [];
+		return { data, total: envelope.total ?? data.length, registered: envelope.registered ?? 0 };
 	}
 }
 

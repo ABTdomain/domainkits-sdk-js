@@ -23,6 +23,7 @@ export interface NrdsSearchParams extends CommonSearchParams {
 	period_min?: number;
 	period_max?: number;
 	has_sale?: boolean;
+	live?: boolean;
 }
 
 export interface NrdsLiveSearchParams extends CommonSearchParams {
@@ -76,6 +77,7 @@ export interface NrdDomain {
 	tld_count: number;
 	components: string[] | null;
 	for_sale: string;
+	live: boolean;
 }
 
 export interface NrdLiveDomain {
@@ -144,6 +146,30 @@ export interface MarketDomain {
 	platform: string;
 	listed_days: number | null;
 	tld_count: number;
+}
+
+export interface BulkDnsEntry {
+	domain: string;
+	status: string;
+	nameservers: string[];
+	domain_status?: 'for_sale' | 'parking';
+}
+
+export interface BulkWhoisEntry {
+	domain: string;
+	registered: boolean;
+	registrar_name: string;
+	created: string;
+	updated: string;
+	expires: string;
+	status: string[];
+	nameservers: string[];
+}
+
+export interface BulkResult<T> {
+	data: T[];
+	total: number;
+	registered: number;
 }
 
 export interface SearchResult<T> {
