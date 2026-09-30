@@ -29,7 +29,6 @@ import type {
 	NrdsSearchParams,
 	NsReverseParams,
 	NsReverseResult,
-	SafetyReport,
 	RegistrarEntry,
 	SearchResult,
 	StatusGuideEntry,
@@ -135,10 +134,6 @@ export class DomainKits {
 
 	bulkWhois(domains: string[]): Promise<BulkResult<BulkWhoisEntry>> {
 		return this.client.requestBulk<BulkWhoisEntry>('/bulk/whois', { domains });
-	}
-
-	safety(domain: string): Promise<SafetyReport> {
-		return this.client.request<SafetyReport>('/safety', { domain });
 	}
 
 	async ipLookup(query: string): Promise<IpLookup | null> {

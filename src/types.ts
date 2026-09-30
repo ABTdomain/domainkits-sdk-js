@@ -239,22 +239,6 @@ export interface NsReverseResult {
 	ns: string;
 }
 
-export interface SafetyReport {
-	domain: string;
-	safe?: {
-		domain: string;
-		is_safe: boolean;
-		matches_count: number;
-		scan_date?: string;
-	};
-	index?: {
-		domain: string;
-		indexed: boolean;
-		index_count: number;
-		checked_at?: string;
-	};
-}
-
 export interface IpLookup {
 	ip: string;
 	type: string;

@@ -50,7 +50,6 @@ Lookups and reports:
 | `dk.dns(domain)` | `/dns` |
 | `dk.bulkDns(domains)` | `/bulk/dns` |
 | `dk.bulkWhois(domains)` | `/bulk/whois` |
-| `dk.safety(domain)` | `/safety` |
 | `dk.ipLookup(query)` | `/ip-lookup` |
 | `dk.registrar(query)` | `/registrar` |
 | `dk.statusGuide(query)` | `/status-guide` |
