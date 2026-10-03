@@ -395,7 +395,6 @@ export interface CtCertificate {
 	idx?: number;
 }
 
-export type CtField = 'reg' | 'sld';
 export type CtSort = 'newest' | 'latest';
 export type CtCertType = 'DV' | 'EV' | 'OV';
 
@@ -413,14 +412,28 @@ export interface CtCertsParams extends CtCommonParams {
 	fingerprint?: string;
 }
 
-export interface CtSearchParams extends CtCommonParams {
-	keyword: string;
-	field?: CtField;
-	tld?: string;
-}
-
 export interface CtSubdomainsParams extends CtCommonParams {
 	domain: string;
+}
+
+export interface HostnameSearchParams {
+	q: string;
+	since?: string;
+	until?: string;
+	limit?: number;
+	field?: 'reg' | 'sub';
+	tld?: string;
+	tld_type?: 'gtld' | 'cctld';
+}
+
+export interface HostnameRecord {
+	hostname: string;
+	reg_domain: string;
+	issuretime: string;
+}
+
+export interface HostnameSearchResult extends SearchResult<HostnameRecord> {
+	window: { since: string; until: string };
 }
 
 export type TrendsTldType = 'active' | 'newly';

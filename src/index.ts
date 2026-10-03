@@ -11,7 +11,6 @@ import type {
 	CtCertificate,
 	CtCertsParams,
 	CtHostname,
-	CtSearchParams,
 	CtSubdomainsParams,
 	DeletedDomain,
 	DeletedSearchParams,
@@ -19,6 +18,8 @@ import type {
 	IpLookup,
 	ExpiredDomain,
 	ExpiredSearchParams,
+	HostnameSearchParams,
+	HostnameSearchResult,
 	MarketDomain,
 	MarketSearchParams,
 	DomainChange,
@@ -182,8 +183,8 @@ export class DomainKits {
 		return this.client.requestList<CtCertificate>('/ct/certs', toQuery(params));
 	}
 
-	ctSearch(params: CtSearchParams): Promise<SearchResult<CtHostname>> {
-		return this.client.requestList<CtHostname>('/ct/search', toQuery(params));
+	hostnameSearch(params: HostnameSearchParams): Promise<HostnameSearchResult> {
+		return this.client.requestEnvelope<HostnameSearchResult>('/search/hostname', toQuery(params));
 	}
 
 	tldTrends(type: TrendsTldType, params: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
