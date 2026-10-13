@@ -26,11 +26,6 @@ export interface NrdsSearchParams extends CommonSearchParams {
 	live?: boolean;
 }
 
-export interface NrdsLiveSearchParams extends CommonSearchParams {
-	create_date_start?: string;
-	create_date_end?: string;
-}
-
 export interface ExpiredSearchParams extends CommonSearchParams {
 	status?: ExpiryStage;
 	age_min?: number;
@@ -75,18 +70,8 @@ export interface NrdDomain {
 	period: number;
 	length: number;
 	tld_count: number;
-	components: string[] | null;
 	for_sale: string;
 	live: boolean;
-}
-
-export interface NrdLiveDomain {
-	domain: string;
-	tld: string;
-	created: string;
-	expires: string;
-	length: number;
-	components: string[] | null;
 }
 
 export interface ExpiredDomain {
@@ -111,7 +96,6 @@ export interface AgedDomain {
 	created: string;
 	age: number;
 	length: number;
-	components: string[] | null;
 	for_sale: string;
 	tld_count: number;
 }
@@ -132,7 +116,6 @@ export interface DeletedDomain {
 	exp_year: string;
 	found_date: string;
 	length: number;
-	components: string[] | null;
 	hold: string;
 	tld_count: number;
 }
@@ -141,7 +124,6 @@ export interface MarketDomain {
 	domain: string;
 	tld: string;
 	length: number;
-	components: string[] | null;
 	for_sale: string;
 	platform: string;
 	listed_days: number | null;
@@ -373,7 +355,6 @@ export interface DomainChange {
 	details_new: string;
 	length: number;
 	tld_count: number;
-	components: string[] | null;
 }
 
 export interface CtHostname {

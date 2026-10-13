@@ -25,8 +25,6 @@ import type {
 	DomainChange,
 	MonitorChangesParams,
 	NrdDomain,
-	NrdLiveDomain,
-	NrdsLiveSearchParams,
 	NrdsSearchParams,
 	NsReverseParams,
 	NsReverseResult,
@@ -91,7 +89,6 @@ export class DomainKits {
 
 	readonly expired: SearchResource<ExpiredSearchParams, ExpiredDomain>;
 	readonly nrds: SearchResource<NrdsSearchParams, NrdDomain>;
-	readonly nrdsLive: SearchResource<NrdsLiveSearchParams, NrdLiveDomain>;
 	readonly aged: SearchResource<AgedSearchParams, AgedDomain>;
 	readonly active: SearchResource<ActiveSearchParams, ActiveDomain>;
 	readonly deleted: SearchResource<DeletedSearchParams, DeletedDomain>;
@@ -102,7 +99,6 @@ export class DomainKits {
 
 		this.expired = new SearchResource(this.client, '/search/expired');
 		this.nrds = new SearchResource(this.client, '/search/nrds');
-		this.nrdsLive = new SearchResource(this.client, '/search/nrds-live');
 		this.aged = new SearchResource(this.client, '/search/aged');
 		this.active = new SearchResource(this.client, '/search/active');
 		this.deleted = new SearchResource(this.client, '/search/deleted');
